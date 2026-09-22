@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Award,
   BarChart3,
@@ -15,7 +15,10 @@ import { CertificadosView } from "@/components/pedsar/certificados-view";
 import { CursosAdmin } from "@/components/pedsar/cursos-admin";
 import { EstudiantesView } from "@/components/pedsar/estudiantes-view";
 import { InscripcionesView } from "@/components/pedsar/inscripciones-view";
-import { LoginView } from "@/components/pedsar/login-view";
+import {
+  LoginView,
+  type VistaAcceso,
+} from "@/components/pedsar/login-view";
 import { PanelView } from "@/components/pedsar/panel-view";
 import { ReportesView } from "@/components/pedsar/reportes-view";
 import {
@@ -60,10 +63,33 @@ const SECCIONES_PANEL: {
   { seccion: "reportes", etiqueta: "Reportes", icono: BarChart3 },
 ];
 
+const RUTAS_PUBLICAS: Record<Exclude<SeccionPublica, "ficha">, string> = {
+  inicio: "#/inicio",
+  cursos: "#/cursos",
+  nosotros: "#/nosotros",
+  contacto: "#/contacto",
+  verificar: "#/verificar-certificado",
+};
+
+const RUTAS_ACCESO: Record<VistaAcceso, string> = {
+  ingresar: "#/ingresar",
+  registro: "#/registro",
+  verificar: "#/registro/verificar",
+  registrado: "#/registro/completado",
+  recuperar: "#/recuperar-acceso",
+  enviado: "#/recuperar-acceso/enviado",
+};
+
+function guardarRuta(ruta: string) {
+  if (window.location.hash === ruta) return;
+  window.history.pushState({ pedsar: true }, "", ruta);
+}
+
 export default function Page() {
   const { toast } = useToast();
   const [pantalla, setPantalla] = useState<Pantalla>("sitio");
   const [seccionPublica, setSeccionPublica] = useState<SeccionPublica>("inicio");
+  const [vistaAcceso, setVistaAcceso] = useState<VistaAcceso>("ingresar");
   const [seccionPanel, setSeccionPanel] = useState<SeccionPanel>("panel");
   const [cursos, setCursos] = useState<Curso[]>(CURSOS_INICIALES);
   const [cursoFicha, setCursoFicha] = useState<Curso>(CURSOS_INICIALES[0]);
@@ -73,20 +99,115 @@ export default function Page() {
   const [certificados, setCertificados] = useState<Certificado[]>(
     CERTIFICADOS_INICIALES
   );
+  const cursosRef = useRef(cursos);
+
+  useEffect(() => {
+    cursosRef.current = cursos;
+  }, [cursos]);
+
+  useEffect(() => {
+    function aplicarRuta() {
+      const ruta = window.location.hash || "#/inicio";
+      const partes = ruta.replace(/^#\//, "").split("/");
+      const [principal, detalle] = partes;
+
+      if (principal === "curso" && detalle) {
+        const curso = cursosRef.current.find(
+          (item) => item.id === decodeURIComponent(detalle)
+        );
+        if (curso) {
+          setCursoFicha(curso);
+          setPantalla("sitio");
+          setSeccionPublica("ficha");
+          return;
+        }
+      }
+
+      const seccionesPublicas: Record<string, Exclude<SeccionPublica, "ficha">> = {
+        inicio: "inicio",
+        cursos: "cursos",
+        nosotros: "nosotros",
+        contacto: "contacto",
+        "verificar-certificado": "verificar",
+      };
+      if (seccionesPublicas[principal]) {
+        setPantalla("sitio");
+        setSeccionPublica(seccionesPublicas[principal]);
+        return;
+      }
+
+      const vistasAcceso: Record<string, VistaAcceso> = {
+        ingresar: "ingresar",
+        registro: detalle === "verificar" ? "verificar" : detalle === "completado" ? "registrado" : "registro",
+        "recuperar-acceso": detalle === "enviado" ? "enviado" : "recuperar",
+      };
+      if (vistasAcceso[principal]) {
+        setVistaAcceso(vistasAcceso[principal]);
+        setPantalla("login");
+        return;
+      }
+
+      if (principal === "panel") {
+        const seccionesValidas: SeccionPanel[] = [
+          "panel",
+          "estudiantes",
+          "inscripciones",
+          "cursos",
+          "certificados",
+          "reportes",
+        ];
+        const seccion = seccionesValidas.includes(detalle as SeccionPanel)
+          ? (detalle as SeccionPanel)
+          : "panel";
+        setSeccionPanel(seccion);
+        setPantalla("panel");
+        return;
+      }
+
+      window.history.replaceState({ pedsar: true }, "", "#/inicio");
+      setPantalla("sitio");
+      setSeccionPublica("inicio");
+    }
+
+    if (!window.location.hash) {
+      window.history.replaceState({ pedsar: true }, "", "#/inicio");
+    }
+    aplicarRuta();
+    window.addEventListener("popstate", aplicarRuta);
+    window.addEventListener("hashchange", aplicarRuta);
+    return () => {
+      window.removeEventListener("popstate", aplicarRuta);
+      window.removeEventListener("hashchange", aplicarRuta);
+    };
+  }, []);
 
   const cursoActual =
     cursos.find((curso) => curso.id === cursoFicha.id) ?? cursoFicha;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [pantalla, seccionPublica, seccionPanel]);
+  }, [pantalla, seccionPublica, seccionPanel, vistaAcceso]);
 
   function navegarSitio(seccion: SeccionPublica) {
+    if (seccion !== "ficha") guardarRuta(RUTAS_PUBLICAS[seccion]);
     setPantalla("sitio");
     setSeccionPublica(seccion);
   }
 
+  function navegarAcceso(vista: VistaAcceso) {
+    guardarRuta(RUTAS_ACCESO[vista]);
+    setVistaAcceso(vista);
+    setPantalla("login");
+  }
+
+  function navegarPanel(seccion: SeccionPanel) {
+    guardarRuta(seccion === "panel" ? "#/panel" : `#/panel/${seccion}`);
+    setSeccionPanel(seccion);
+    setPantalla("panel");
+  }
+
   function inscribirse(curso: Curso) {
+    guardarRuta(`#/curso/${encodeURIComponent(curso.id)}`);
     setCursoFicha(curso);
     setPantalla("sitio");
     setSeccionPublica("ficha");
@@ -157,6 +278,7 @@ export default function Page() {
   }
 
   function cerrarSesion() {
+    guardarRuta("#/inicio");
     setPantalla("sitio");
     setSeccionPublica("inicio");
   }
@@ -164,9 +286,10 @@ export default function Page() {
   if (pantalla === "login") {
     return (
       <LoginView
+        vista={vistaAcceso}
+        onCambiarVista={navegarAcceso}
         onAcceder={() => {
-          setSeccionPanel("panel");
-          setPantalla("panel");
+          navegarPanel("panel");
         }}
         onVolver={() => navegarSitio("inicio")}
       />
@@ -194,7 +317,7 @@ export default function Page() {
               <button
                 key={item.seccion}
                 type="button"
-                onClick={() => setSeccionPanel(item.seccion)}
+                onClick={() => navegarPanel(item.seccion)}
                 aria-current={
                   seccionPanel === item.seccion ? "page" : undefined
                 }
@@ -262,7 +385,7 @@ export default function Page() {
                 <button
                   key={item.seccion}
                   type="button"
-                  onClick={() => setSeccionPanel(item.seccion)}
+                  onClick={() => navegarPanel(item.seccion)}
                   aria-current={
                     seccionPanel === item.seccion ? "page" : undefined
                   }
@@ -284,8 +407,8 @@ export default function Page() {
               <PanelView
                 cursos={cursos}
                 inscripciones={inscripciones}
-                onVerReportes={() => setSeccionPanel("reportes")}
-                onIrCertificados={() => setSeccionPanel("certificados")}
+                onVerReportes={() => navegarPanel("reportes")}
+                onIrCertificados={() => navegarPanel("certificados")}
               />
             )}
             {seccionPanel === "estudiantes" && (
@@ -321,7 +444,7 @@ export default function Page() {
       certificados={certificados}
       onNavegar={navegarSitio}
       onInscribirse={inscribirse}
-      onIngresar={() => setPantalla("login")}
+      onIngresar={() => navegarAcceso("ingresar")}
       onRegistrar={registrarInscripcion}
     />
   );

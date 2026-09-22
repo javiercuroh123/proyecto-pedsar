@@ -24,11 +24,13 @@ import { Label } from "@/components/ui/label";
 import { CREDENCIALES_DEMO } from "@/lib/pedsar";
 
 type LoginViewProps = {
+  vista: VistaAcceso;
+  onCambiarVista: (vista: VistaAcceso) => void;
   onAcceder: () => void;
   onVolver: () => void;
 };
 
-type VistaAcceso =
+export type VistaAcceso =
   | "ingresar"
   | "registro"
   | "verificar"
@@ -54,8 +56,12 @@ function Marca() {
   );
 }
 
-export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
-  const [vista, setVista] = useState<VistaAcceso>("ingresar");
+export function LoginView({
+  vista,
+  onCambiarVista,
+  onAcceder,
+  onVolver,
+}: LoginViewProps) {
   const [identificador, setIdentificador] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -102,7 +108,7 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
       return;
     }
     setError(null);
-    setVista("enviado");
+    onCambiarVista("enviado");
   }
 
   function usarDemo() {
@@ -142,7 +148,7 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
 
     setCodigo("");
     setError(null);
-    setVista("verificar");
+    onCambiarVista("verificar");
   }
 
   function verificarRegistro(evento: React.FormEvent<HTMLFormElement>) {
@@ -152,16 +158,16 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
       return;
     }
     setError(null);
-    setVista("registrado");
+    onCambiarVista("registrado");
   }
 
   function abrirRegistro() {
-    setVista("registro");
+    onCambiarVista("registro");
     setError(null);
   }
 
   function volverAIngresar() {
-    setVista("ingresar");
+    onCambiarVista("ingresar");
     setError(null);
   }
 
@@ -320,7 +326,7 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
                     <button
                       type="button"
                       onClick={() => {
-                        setVista("recuperar");
+                        onCambiarVista("recuperar");
                         setError(null);
                       }}
                       className="text-sm font-semibold text-[#167565] hover:underline"
@@ -547,7 +553,7 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    setVista("registro");
+                    onCambiarVista("registro");
                     setError(null);
                   }}
                   className="flex items-center gap-2 text-sm font-semibold text-[#167565] hover:underline"
