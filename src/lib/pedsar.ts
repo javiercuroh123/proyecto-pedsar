@@ -77,6 +77,7 @@ export type MensajeContacto = {
 
 export const CREDENCIALES_DEMO = {
   usuario: "admin",
+  correo: "admin@pedsar.pe",
   contrasena: "pedsar123",
 };
 
