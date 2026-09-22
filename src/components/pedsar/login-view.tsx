@@ -14,10 +14,12 @@ import {
   Mail,
   ShieldCheck,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { CREDENCIALES_DEMO } from "@/lib/pedsar";
 
@@ -26,7 +28,13 @@ type LoginViewProps = {
   onVolver: () => void;
 };
 
-type VistaAcceso = "ingresar" | "recuperar" | "enviado";
+type VistaAcceso =
+  | "ingresar"
+  | "registro"
+  | "verificar"
+  | "registrado"
+  | "recuperar"
+  | "enviado";
 
 function Marca() {
   return (
@@ -53,6 +61,14 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [recordarme, setRecordarme] = useState(false);
   const [correoRecuperacion, setCorreoRecuperacion] = useState("");
+  const [nombres, setNombres] = useState("");
+  const [apellidos, setApellidos] = useState("");
+  const [correoRegistro, setCorreoRegistro] = useState("");
+  const [contrasenaRegistro, setContrasenaRegistro] = useState("");
+  const [confirmacion, setConfirmacion] = useState("");
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [mostrarContrasenaRegistro, setMostrarContrasenaRegistro] = useState(false);
+  const [codigo, setCodigo] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   function enviar(evento: React.FormEvent<HTMLFormElement>) {
@@ -92,6 +108,55 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
   function usarDemo() {
     setIdentificador(CREDENCIALES_DEMO.correo);
     setContrasena(CREDENCIALES_DEMO.contrasena);
+    setError(null);
+  }
+
+  function registrar(evento: React.FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correoRegistro.trim());
+    const contrasenaValida =
+      contrasenaRegistro.length >= 8 &&
+      /[A-Za-z]/.test(contrasenaRegistro) &&
+      /\d/.test(contrasenaRegistro);
+
+    if (!nombres.trim() || !apellidos.trim()) {
+      setError("Ingresa tus nombres y apellidos.");
+      return;
+    }
+    if (!correoValido) {
+      setError("Ingresa un correo electrónico válido.");
+      return;
+    }
+    if (!contrasenaValida) {
+      setError("La contraseña debe tener al menos 8 caracteres, una letra y un número.");
+      return;
+    }
+    if (contrasenaRegistro !== confirmacion) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+    if (!aceptaTerminos) {
+      setError("Debes aceptar los términos y la política de privacidad.");
+      return;
+    }
+
+    setCodigo("");
+    setError(null);
+    setVista("verificar");
+  }
+
+  function verificarRegistro(evento: React.FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    if (codigo !== "123456") {
+      setError("El código no es correcto. Para esta demostración usa 123456.");
+      return;
+    }
+    setError(null);
+    setVista("registrado");
+  }
+
+  function abrirRegistro() {
+    setVista("registro");
     setError(null);
   }
 
@@ -302,10 +367,274 @@ export function LoginView({ onAcceder, onVolver }: LoginViewProps) {
 
                 <p className="mt-7 text-center text-sm text-[#687875]">
                   ¿Aún no tienes una cuenta?{" "}
-                  <button type="button" onClick={onVolver} className="font-bold text-[#167565] hover:underline">
-                    Explorar cursos
+                  <button type="button" onClick={abrirRegistro} className="font-bold text-[#167565] hover:underline">
+                    Regístrate
                   </button>
                 </p>
+              </div>
+            )}
+
+            {vista === "registro" && (
+              <div className="rounded-3xl border border-[#dce5e1] bg-white p-6 shadow-[0_24px_70px_rgba(20,44,45,0.09)] sm:p-9">
+                <button
+                  type="button"
+                  onClick={volverAIngresar}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#167565] hover:underline"
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Volver a ingresar
+                </button>
+
+                <div className="mt-6 flex items-start gap-4">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#e9f5cf] text-[#315b45]">
+                    <UserPlus className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.17em] text-[#167565]">
+                      Nueva cuenta
+                    </p>
+                    <h1 className="mt-1 text-3xl font-black tracking-[-0.04em] text-[#173132]">
+                      Empieza a aprender
+                    </h1>
+                    <p className="mt-2 text-sm leading-6 text-[#647471]">
+                      Crea tu perfil para inscribirte y seguir tu progreso.
+                    </p>
+                  </div>
+                </div>
+
+                <form className="mt-7 space-y-5" onSubmit={registrar} noValidate>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="nombres" className="text-sm font-semibold text-[#243b3b]">
+                        Nombres
+                      </Label>
+                      <Input
+                        id="nombres"
+                        value={nombres}
+                        onChange={(evento) => {
+                          setNombres(evento.target.value);
+                          setError(null);
+                        }}
+                        placeholder="Javier"
+                        autoComplete="given-name"
+                        className="h-12 rounded-xl border-[#cbd8d3] text-base focus-visible:border-[#167565] focus-visible:ring-[#167565]/20"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="apellidos" className="text-sm font-semibold text-[#243b3b]">
+                        Apellidos
+                      </Label>
+                      <Input
+                        id="apellidos"
+                        value={apellidos}
+                        onChange={(evento) => {
+                          setApellidos(evento.target.value);
+                          setError(null);
+                        }}
+                        placeholder="Pérez"
+                        autoComplete="family-name"
+                        className="h-12 rounded-xl border-[#cbd8d3] text-base focus-visible:border-[#167565] focus-visible:ring-[#167565]/20"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="correo-registro" className="text-sm font-semibold text-[#243b3b]">
+                      Correo electrónico
+                    </Label>
+                    <div className="relative">
+                      <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#778683]" aria-hidden="true" />
+                      <Input
+                        id="correo-registro"
+                        type="email"
+                        value={correoRegistro}
+                        onChange={(evento) => {
+                          setCorreoRegistro(evento.target.value);
+                          setError(null);
+                        }}
+                        placeholder="nombre@correo.com"
+                        autoComplete="email"
+                        className="h-12 rounded-xl border-[#cbd8d3] pl-12 text-base focus-visible:border-[#167565] focus-visible:ring-[#167565]/20"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="contrasena-registro" className="text-sm font-semibold text-[#243b3b]">
+                      Contraseña
+                    </Label>
+                    <div className="relative">
+                      <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#778683]" aria-hidden="true" />
+                      <Input
+                        id="contrasena-registro"
+                        type={mostrarContrasenaRegistro ? "text" : "password"}
+                        value={contrasenaRegistro}
+                        onChange={(evento) => {
+                          setContrasenaRegistro(evento.target.value);
+                          setError(null);
+                        }}
+                        placeholder="Mínimo 8 caracteres"
+                        autoComplete="new-password"
+                        className="h-12 rounded-xl border-[#cbd8d3] px-12 text-base focus-visible:border-[#167565] focus-visible:ring-[#167565]/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setMostrarContrasenaRegistro((mostrar) => !mostrar)}
+                        className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-[#677774] hover:bg-[#edf4f1] hover:text-[#167565]"
+                        aria-label={mostrarContrasenaRegistro ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        {mostrarContrasenaRegistro ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                    <p className="text-xs leading-5 text-[#778683]">Usa al menos 8 caracteres, una letra y un número.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmacion" className="text-sm font-semibold text-[#243b3b]">
+                      Confirmar contraseña
+                    </Label>
+                    <Input
+                      id="confirmacion"
+                      type={mostrarContrasenaRegistro ? "text" : "password"}
+                      value={confirmacion}
+                      onChange={(evento) => {
+                        setConfirmacion(evento.target.value);
+                        setError(null);
+                      }}
+                      placeholder="Repite tu contraseña"
+                      autoComplete="new-password"
+                      className="h-12 rounded-xl border-[#cbd8d3] text-base focus-visible:border-[#167565] focus-visible:ring-[#167565]/20"
+                    />
+                  </div>
+
+                  <div className="flex items-start gap-3 rounded-xl bg-[#f5f9f7] p-4">
+                    <Checkbox
+                      id="acepta-terminos"
+                      checked={aceptaTerminos}
+                      onCheckedChange={(estado) => {
+                        setAceptaTerminos(estado === true);
+                        setError(null);
+                      }}
+                      className="mt-0.5 border-[#aebeb8] data-[state=checked]:border-[#167565] data-[state=checked]:bg-[#167565]"
+                    />
+                    <Label htmlFor="acepta-terminos" className="text-sm font-normal leading-5 text-[#526360]">
+                      Acepto los términos de uso y la política de privacidad de PEDSAR.
+                    </Label>
+                  </div>
+
+                  {error && (
+                    <p role="alert" className="rounded-xl border border-[#efcaca] bg-[#fff3f3] px-4 py-3 text-sm leading-5 text-[#9e3535]">
+                      {error}
+                    </p>
+                  )}
+
+                  <Button type="submit" className="h-12 w-full rounded-xl bg-[#167565] text-base font-bold text-white hover:bg-[#105f53]">
+                    Crear mi cuenta
+                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </form>
+
+                <p className="mt-6 text-center text-sm text-[#687875]">
+                  ¿Ya tienes una cuenta?{" "}
+                  <button type="button" onClick={volverAIngresar} className="font-bold text-[#167565] hover:underline">
+                    Ingresa aquí
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {vista === "verificar" && (
+              <div className="rounded-3xl border border-[#dce5e1] bg-white p-7 text-center shadow-[0_24px_70px_rgba(20,44,45,0.09)] sm:p-10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVista("registro");
+                    setError(null);
+                  }}
+                  className="flex items-center gap-2 text-sm font-semibold text-[#167565] hover:underline"
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Editar datos
+                </button>
+                <span className="mx-auto mt-7 grid h-16 w-16 place-items-center rounded-full bg-[#e9f5cf] text-[#315b45]">
+                  <Mail className="h-7 w-7" aria-hidden="true" />
+                </span>
+                <h1 className="mt-5 text-3xl font-black tracking-[-0.04em] text-[#173132]">
+                  Verifica tu correo
+                </h1>
+                <p className="mt-3 text-sm leading-6 text-[#647471]">
+                  Ingresa el código enviado a <strong className="text-[#334947]">{correoRegistro}</strong>.
+                </p>
+
+                <form onSubmit={verificarRegistro} className="mt-7" noValidate>
+                  <Label htmlFor="codigo-registro" className="sr-only">Código de verificación</Label>
+                  <InputOTP
+                    id="codigo-registro"
+                    maxLength={6}
+                    inputMode="numeric"
+                    value={codigo}
+                    onChange={(valor) => {
+                      setCodigo(valor.replace(/\D/g, ""));
+                      setError(null);
+                    }}
+                    containerClassName="justify-center"
+                  >
+                    <InputOTPGroup>
+                      {[0, 1, 2, 3, 4, 5].map((indice) => (
+                        <InputOTPSlot
+                          key={indice}
+                          index={indice}
+                          className="h-12 w-11 border-[#cbd8d3] text-lg font-bold first:rounded-l-xl last:rounded-r-xl data-[active=true]:border-[#167565] data-[active=true]:ring-[#167565]/20 sm:w-12"
+                        />
+                      ))}
+                    </InputOTPGroup>
+                  </InputOTP>
+
+                  <div className="mt-5 rounded-xl border border-[#d9e5e0] bg-[#f5f9f7] px-4 py-3 text-sm text-[#526360]">
+                    Código de demostración: <strong className="text-[#167565]">123456</strong>
+                  </div>
+
+                  {error && (
+                    <p role="alert" className="mt-4 rounded-xl border border-[#efcaca] bg-[#fff3f3] px-4 py-3 text-sm leading-5 text-[#9e3535]">
+                      {error}
+                    </p>
+                  )}
+
+                  <Button type="submit" className="mt-5 h-12 w-full rounded-xl bg-[#167565] text-base font-bold text-white hover:bg-[#105f53]">
+                    Verificar y crear cuenta
+                  </Button>
+                </form>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCodigo("");
+                    setError(null);
+                  }}
+                  className="mt-5 text-sm font-semibold text-[#167565] hover:underline"
+                >
+                  Reenviar código
+                </button>
+              </div>
+            )}
+
+            {vista === "registrado" && (
+              <div className="rounded-3xl border border-[#dce5e1] bg-white p-7 text-center shadow-[0_24px_70px_rgba(20,44,45,0.09)] sm:p-10">
+                <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[#e9f5cf] text-[#315b45]">
+                  <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
+                </span>
+                <p className="mt-6 text-xs font-bold uppercase tracking-[0.17em] text-[#167565]">Registro completado</p>
+                <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] text-[#173132]">
+                  ¡Bienvenido, {nombres.trim()}!
+                </h1>
+                <p className="mt-3 text-sm leading-6 text-[#647471]">
+                  Tu cuenta de demostración fue validada. Ya puedes conocer cómo se verá tu campus PEDSAR.
+                </p>
+                <Button type="button" onClick={onAcceder} className="mt-7 h-12 w-full rounded-xl bg-[#167565] text-base font-bold text-white hover:bg-[#105f53]">
+                  Ir al campus de demostración
+                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                </Button>
+                <button type="button" onClick={volverAIngresar} className="mt-5 text-sm font-semibold text-[#167565] hover:underline">
+                  Volver a iniciar sesión
+                </button>
               </div>
             )}
 
