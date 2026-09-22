@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AsistentePedsar } from "@/components/pedsar/asistente-pedsar";
 import { CatalogoView } from "@/components/pedsar/catalogo-view";
 import { ContactoView } from "@/components/pedsar/contacto-view";
 import { FichaView } from "@/components/pedsar/ficha-view";
@@ -73,6 +74,15 @@ export function SitioPublico({
   function navegar(destino: SeccionPublica) {
     setMenuAbierto(false);
     onNavegar(destino);
+  }
+
+  function contactarAsesor() {
+    navegar("contacto");
+    window.setTimeout(() => {
+      document
+        .getElementById("formulario-contacto")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
   }
 
   return (
@@ -219,6 +229,8 @@ export function SitioPublico({
       )}
       {seccion === "nosotros" && <NosotrosView onVerCursos={() => navegar("cursos")} />}
       {seccion === "contacto" && <ContactoView />}
+
+      <AsistentePedsar onContactar={contactarAsesor} />
 
       {seccion !== "ficha" && (
         <footer className="bg-[#102829] text-white">
