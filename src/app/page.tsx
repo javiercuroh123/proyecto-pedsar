@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   CURSOS_INICIALES,
+  CERTIFICADOS_INICIALES,
   INSCRIPCIONES_INICIALES,
   fechaHoy,
   generarCodigoCertificado,
@@ -69,7 +70,9 @@ export default function Page() {
   const [inscripciones, setInscripciones] = useState<Inscripcion[]>(
     INSCRIPCIONES_INICIALES
   );
-  const [certificados, setCertificados] = useState<Certificado[]>([]);
+  const [certificados, setCertificados] = useState<Certificado[]>(
+    CERTIFICADOS_INICIALES
+  );
 
   const cursoActual =
     cursos.find((curso) => curso.id === cursoFicha.id) ?? cursoFicha;
@@ -110,6 +113,10 @@ export default function Page() {
       id: `curso-${Date.now()}`,
       etiqueta: datos.etiqueta,
       nombre: datos.nombre,
+      descripcion:
+        "Capacitación práctica diseñada para aplicar lo aprendido desde la primera sesión.",
+      categoria: datos.etiqueta === "Taller" ? "Talleres" : "Tecnología",
+      nivel: "Inicial",
       modalidad: datos.modalidad,
       duracion: `${datos.horas} horas`,
       duracionDetalle: `${datos.horas} horas (${semanas} ${
@@ -121,6 +128,18 @@ export default function Page() {
       instructor: datos.instructor,
       inicio: datos.inicio,
       vacantes: datos.vacantes,
+      calificacion: 0,
+      estudiantes: 0,
+      destacado: false,
+      tema: "esmeralda",
+      requisitos: ["No se requieren conocimientos previos"],
+      temario: [
+        "Fundamentos y conceptos esenciales",
+        "Práctica guiada",
+        "Aplicación en un caso real",
+        "Proyecto o evaluación final",
+      ],
+      resultado: "Una evidencia práctica del aprendizaje alcanzado.",
     };
     setCursos((previo) => [...previo, nuevo]);
   }
@@ -299,6 +318,7 @@ export default function Page() {
       seccion={seccionPublica}
       cursos={cursos}
       cursoFicha={cursoActual}
+      certificados={certificados}
       onNavegar={navegarSitio}
       onInscribirse={inscribirse}
       onIngresar={() => setPantalla("login")}

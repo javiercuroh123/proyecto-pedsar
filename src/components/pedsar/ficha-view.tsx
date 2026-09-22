@@ -1,6 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import {
+  BookOpen,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  GraduationCap,
+  Star,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -97,10 +106,107 @@ export function FichaView({
   }
 
   return (
-    <div className="grid gap-4 bg-[#F5F6F7] p-4 sm:p-6 lg:grid-cols-[340px_1fr]">
+    <div className="space-y-6">
+      <section className="overflow-hidden rounded-3xl bg-[#143f3c] text-white shadow-[0_28px_70px_rgba(20,63,60,0.18)]">
+        <div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[1fr_330px] lg:p-12">
+          <div>
+            <div className="flex flex-wrap gap-2 text-xs font-semibold">
+              <span className="rounded-full bg-[#c8ed69] px-3 py-1 text-[#173132]">
+                {curso.categoria}
+              </span>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">
+                {curso.nivel}
+              </span>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">
+                {curso.modalidad}
+              </span>
+            </div>
+            <h1 className="mt-6 max-w-3xl text-4xl font-black leading-tight tracking-[-0.045em] sm:text-5xl">
+              {curso.nombre}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/70">
+              {curso.descripcion}
+            </p>
+            <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/70">
+              <span className="inline-flex items-center gap-2">
+                <Clock3 className="h-4 w-4 text-[#c8ed69]" aria-hidden="true" />
+                {curso.duracionDetalle}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-[#c8ed69]" aria-hidden="true" />
+                Inicio: {curso.inicio}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Star className="h-4 w-4 fill-[#c8ed69] text-[#c8ed69]" aria-hidden="true" />
+                {curso.calificacion.toFixed(1)} · {curso.estudiantes} estudiantes
+              </span>
+            </div>
+          </div>
+          <aside className="rounded-2xl border border-white/12 bg-white/[0.08] p-6 backdrop-blur-sm">
+            <span className="text-xs font-bold uppercase tracking-[0.16em] text-white/55">
+              Inversión total
+            </span>
+            <strong className="mt-2 block text-4xl font-black">
+              {formatSolesConDecimales(curso.precio)}
+            </strong>
+            <div className="mt-6 space-y-3 border-t border-white/10 pt-5 text-sm text-white/70">
+              <p className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#c8ed69]" />
+                {curso.vacantes} vacantes disponibles
+              </p>
+              <p className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4 text-[#c8ed69]" />
+                Instructor: {curso.instructor}
+              </p>
+            </div>
+            <span className="mt-6 block rounded-xl bg-[#c8ed69] px-4 py-3 text-center text-sm font-bold text-[#173132]">
+              Inscripciones abiertas
+            </span>
+          </aside>
+        </div>
+      </section>
+
+      <section className="grid gap-6 rounded-3xl border border-[#dce5e1] bg-white p-6 sm:p-8 lg:grid-cols-2">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#eaf5f0] text-[#167565]">
+              <BookOpen className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <h2 className="text-xl font-bold text-[#173132]">Lo que aprenderás</h2>
+          </div>
+          <ol className="mt-5 space-y-3">
+            {curso.temario.map((modulo, indice) => (
+              <li key={modulo} className="flex gap-3 text-sm leading-6 text-[#5f706d]">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#f0f6df] text-xs font-bold text-[#315b45]">
+                  {indice + 1}
+                </span>
+                {modulo}
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="border-t border-[#e7ecea] pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+          <h2 className="text-xl font-bold text-[#173132]">Antes de empezar</h2>
+          <ul className="mt-5 space-y-3">
+            {curso.requisitos.map((requisito) => (
+              <li key={requisito} className="flex gap-3 text-sm leading-6 text-[#5f706d]">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#167565]" aria-hidden="true" />
+                {requisito}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 rounded-2xl bg-[#f4f7f6] p-4">
+            <span className="text-xs font-bold uppercase tracking-[0.14em] text-[#167565]">Resultado del curso</span>
+            <p className="mt-2 text-sm font-medium leading-6 text-[#334947]">{curso.resultado}</p>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-4 rounded-3xl bg-[#eef3f1] p-4 sm:p-6 lg:grid-cols-[340px_1fr]">
       {/* Ficha del curso */}
-      <aside className="h-fit rounded-lg border border-[#D5DBE1] bg-white p-5">
-        <h2 className="text-lg font-bold text-[#2E5F8A]">{curso.nombre}</h2>
+      <aside className="h-fit rounded-2xl border border-[#d5dfdb] bg-white p-5">
+        <span className="text-xs font-bold uppercase tracking-[0.14em] text-[#167565]">Resumen de inscripción</span>
+        <h2 className="mt-3 text-lg font-bold text-[#173132]">{curso.nombre}</h2>
         <dl className="mt-4 space-y-2.5 text-sm">
           <div>
             <dt className="inline font-semibold text-[#1F2A36]">Instructor: </dt>
@@ -125,13 +231,13 @@ export function FichaView({
             </dd>
           </div>
         </dl>
-        <p className="mt-6 border-t border-[#EDF0F2] pt-4 text-2xl font-bold text-[#1F2A36]">
+        <p className="mt-6 border-t border-[#EDF0F2] pt-4 text-2xl font-bold text-[#173132]">
           {formatSolesConDecimales(curso.precio)}
         </p>
       </aside>
 
       {/* Formulario o confirmación */}
-      <section className="rounded-lg border border-[#D5DBE1] bg-white p-5 sm:p-6">
+      <section className="rounded-2xl border border-[#d5dfdb] bg-white p-5 sm:p-7">
         {exito ? (
           <div className="flex h-full flex-col items-start justify-center">
             <span className="rounded-full border border-[#BFE0CB] bg-[#E3F2E8] px-3 py-1 text-xs font-medium text-[#2F7D4F]">
@@ -298,9 +404,10 @@ export function FichaView({
               </div>
               <Button
                 type="submit"
-                className="mt-6 bg-[#2E5F8A] px-5 text-white hover:bg-[#27527A]"
+                disabled={curso.vacantes === 0}
+                className="mt-6 rounded-xl bg-[#167565] px-5 text-white hover:bg-[#105f53]"
               >
-                Registrar inscripción y pagar
+                {curso.vacantes > 0 ? "Continuar con la inscripción" : "Curso sin vacantes"}
               </Button>
               <p className="mt-3 text-xs italic text-[#7A8794]">
                 El sistema enviará la confirmación de la matrícula y las
@@ -310,6 +417,7 @@ export function FichaView({
           </>
         )}
       </section>
+      </div>
     </div>
   );
 }
