@@ -34,6 +34,7 @@ type SitioPublicoProps = {
   onNavegar: (seccion: SeccionPublica) => void;
   onInscribirse: (curso: Curso) => void;
   onIngresar: () => void;
+  onCrearCuenta: () => void;
   onRegistrar: (inscripcion: Inscripcion) => void;
 };
 
@@ -63,6 +64,7 @@ export function SitioPublico({
   onNavegar,
   onInscribirse,
   onIngresar,
+  onCrearCuenta,
   onRegistrar,
 }: SitioPublicoProps) {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -116,10 +118,10 @@ export function SitioPublico({
             </Button>
             <Button
               type="button"
-              onClick={() => navegar("cursos")}
+              onClick={onCrearCuenta}
               className="rounded-xl bg-[#167565] px-5 text-white shadow-sm hover:bg-[#105f53]"
             >
-              Ver cursos
+              Crear cuenta
               <ArrowUpRight className="ml-2 h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
@@ -155,9 +157,19 @@ export function SitioPublico({
                   setMenuAbierto(false);
                   onIngresar();
                 }}
-                className="mt-2 rounded-xl bg-[#167565] px-4 py-3 text-left text-sm font-semibold text-white"
+                className="mt-2 rounded-xl border border-[#dce5e1] px-4 py-3 text-left text-sm font-semibold text-[#243b3b] hover:bg-[#f0f5f3]"
               >
                 Ingresar a mi cuenta
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuAbierto(false);
+                  onCrearCuenta();
+                }}
+                className="rounded-xl bg-[#167565] px-4 py-3 text-left text-sm font-semibold text-white"
+              >
+                Crear una cuenta
               </button>
             </div>
           </nav>

@@ -445,6 +445,7 @@ export default function Page() {
       onNavegar={navegarSitio}
       onInscribirse={inscribirse}
       onIngresar={() => navegarAcceso("ingresar")}
+      onCrearCuenta={() => navegarAcceso("registro")}
       onRegistrar={registrarInscripcion}
     />
   );
