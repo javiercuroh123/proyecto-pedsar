@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Compilación de Next.js
+.next/
+out/
+
+# Archivos del sistema y del editor
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# Variables de entorno y credenciales locales
+.env
+.env.*
+!.env.example
+
+# Base de datos local (el prototipo no la requiere)
+db/
