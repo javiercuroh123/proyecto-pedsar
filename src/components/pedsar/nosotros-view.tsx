@@ -31,13 +31,13 @@ const CIFRAS = [
 
 export function NosotrosView({ onVerCursos }: { onVerCursos: () => void }) {
   return (
-    <div className="bg-white">
-      <section className="border-b border-[#E2E7EC] bg-[#DCE6EF]">
+    <div className="bg-[#f4f8f6]">
+      <section className="border-b border-[#24514b] bg-[#143f3c]">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <h1 className="text-2xl font-bold text-[#1F3A54] sm:text-3xl">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">
             Nosotros
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-[#44525F] sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm text-[#c5d9d2] sm:text-base">
             Conoce a PEDSAR E.I.R.L., el centro de formación detrás del sistema
             de cursos y capacitaciones.
           </p>
@@ -47,11 +47,11 @@ export function NosotrosView({ onVerCursos }: { onVerCursos: () => void }) {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-5">
-            <article className="rounded-lg border border-[#D5DBE1] bg-white p-6">
-              <h2 className="text-lg font-bold text-[#1F3A54]">
+            <article className="rounded-lg border border-[#d8e4df] bg-white p-6">
+              <h2 className="text-lg font-bold text-[#173132]">
                 ¿Quiénes somos?
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-[#44525F]">
+              <p className="mt-3 text-sm leading-relaxed text-[#526b63]">
                 PEDSAR E.I.R.L. es una empresa dedicada a la formación práctica
                 en tecnología, programación y ofimática, dirigida a estudiantes,
                 profesionales y equipos de trabajo que buscan fortalecer sus
@@ -59,7 +59,7 @@ export function NosotrosView({ onVerCursos }: { onVerCursos: () => void }) {
                 duración con talleres especializados, todos con certificación
                 digital de validez verificable.
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-[#44525F]">
+              <p className="mt-3 text-sm leading-relaxed text-[#526b63]">
                 Para acercar nuestros programas a más personas hemos impulsado
                 la transformación digital de nuestros procesos: la inscripción,
                 el pago y el seguimiento académico se realizan en línea, sin
@@ -69,18 +69,18 @@ export function NosotrosView({ onVerCursos }: { onVerCursos: () => void }) {
             </article>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <article className="rounded-lg border border-[#D5DBE1] bg-white p-6">
-                <h2 className="text-base font-bold text-[#2E5F8A]">Misión</h2>
-                <p className="mt-2 text-sm leading-relaxed text-[#44525F]">
+              <article className="rounded-lg border border-[#d8e4df] bg-white p-6">
+                <h2 className="text-base font-bold text-[#167565]">Misión</h2>
+                <p className="mt-2 text-sm leading-relaxed text-[#526b63]">
                   Formar profesionales competitivos mediante cursos y
                   capacitaciones de calidad, accesibles y orientados a la
                   práctica, aprovechando la tecnología para simplificar el
                   acceso a la educación.
                 </p>
               </article>
-              <article className="rounded-lg border border-[#D5DBE1] bg-white p-6">
-                <h2 className="text-base font-bold text-[#2E5F8A]">Visión</h2>
-                <p className="mt-2 text-sm leading-relaxed text-[#44525F]">
+              <article className="rounded-lg border border-[#d8e4df] bg-white p-6">
+                <h2 className="text-base font-bold text-[#167565]">Visión</h2>
+                <p className="mt-2 text-sm leading-relaxed text-[#526b63]">
                   Consolidarnos como un centro de referencia regional en
                   capacitación tecnológica, con procesos totalmente digitales y
                   una comunidad de egresados en constante crecimiento.
@@ -88,17 +88,17 @@ export function NosotrosView({ onVerCursos }: { onVerCursos: () => void }) {
               </article>
             </div>
 
-            <article className="rounded-lg border border-[#D5DBE1] bg-white p-6">
-              <h2 className="text-lg font-bold text-[#1F3A54]">
+            <article className="rounded-lg border border-[#d8e4df] bg-white p-6">
+              <h2 className="text-lg font-bold text-[#173132]">
                 Nuestros valores
               </h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 {VALORES.map((valor) => (
                   <div key={valor.titulo}>
-                    <h3 className="text-sm font-semibold text-[#1F2A36]">
+                    <h3 className="text-sm font-semibold text-[#243b3b]">
                       {valor.titulo}
                     </h3>
-                    <p className="mt-1 text-sm text-[#5C6B7A]">
+                    <p className="mt-1 text-sm text-[#647471]">
                       {valor.texto}
                     </p>
                   </div>
@@ -108,33 +108,33 @@ export function NosotrosView({ onVerCursos }: { onVerCursos: () => void }) {
           </div>
 
           <aside className="h-fit space-y-4">
-            <div className="rounded-lg border border-[#D5DBE1] bg-[#F8FAFB] p-5">
-              <h2 className="text-sm font-bold text-[#1F3A54]">
+            <div className="rounded-lg border border-[#d8e4df] bg-[#edf5f1] p-5">
+              <h2 className="text-sm font-bold text-[#173132]">
                 PEDSAR en cifras
               </h2>
               <dl className="mt-4 space-y-4">
                 {CIFRAS.map((cifra) => (
                   <div key={cifra.etiqueta}>
-                    <dt className="text-2xl font-bold text-[#2E5F8A]">
+                    <dt className="text-2xl font-bold text-[#167565]">
                       {cifra.valor}
                     </dt>
-                    <dd className="text-xs text-[#5C6B7A]">{cifra.etiqueta}</dd>
+                    <dd className="text-xs text-[#647471]">{cifra.etiqueta}</dd>
                   </div>
                 ))}
               </dl>
             </div>
-            <div className="rounded-lg border border-[#D5DBE1] bg-white p-5">
-              <h2 className="text-sm font-bold text-[#1F3A54]">
+            <div className="rounded-lg border border-[#d8e4df] bg-white p-5">
+              <h2 className="text-sm font-bold text-[#173132]">
                 Únete a nuestro próximo ciclo
               </h2>
-              <p className="mt-2 text-sm text-[#5C6B7A]">
+              <p className="mt-2 text-sm text-[#647471]">
                 Revisa la oferta vigente e inscríbete en línea desde cualquier
                 dispositivo.
               </p>
               <Button
                 type="button"
                 onClick={onVerCursos}
-                className="mt-4 w-full bg-[#2E5F8A] text-white hover:bg-[#27527A]"
+                className="mt-4 w-full bg-[#167565] text-white hover:bg-[#105f53]"
               >
                 Ver cursos disponibles
               </Button>
