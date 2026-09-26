@@ -1,16 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Award,
-  BarChart3,
-  BookOpen,
-  ClipboardList,
-  ExternalLink,
-  LayoutDashboard,
-  LogOut,
-  Users,
-} from "lucide-react";
+import { AdminLayout, type SeccionPanel } from "@/components/pedsar/admin-layout";
 import { CertificadosView } from "@/components/pedsar/certificados-view";
 import { CursosAdmin } from "@/components/pedsar/cursos-admin";
 import { EstudiantesView } from "@/components/pedsar/estudiantes-view";
@@ -25,8 +16,6 @@ import {
   SitioPublico,
   type SeccionPublica,
 } from "@/components/pedsar/sitio-publico";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   CURSOS_INICIALES,
@@ -41,27 +30,6 @@ import {
 } from "@/lib/pedsar";
 
 type Pantalla = "sitio" | "login" | "panel";
-
-type SeccionPanel =
-  | "panel"
-  | "estudiantes"
-  | "inscripciones"
-  | "cursos"
-  | "certificados"
-  | "reportes";
-
-const SECCIONES_PANEL: {
-  seccion: SeccionPanel;
-  etiqueta: string;
-  icono: typeof LayoutDashboard;
-}[] = [
-  { seccion: "panel", etiqueta: "Panel principal", icono: LayoutDashboard },
-  { seccion: "estudiantes", etiqueta: "Estudiantes", icono: Users },
-  { seccion: "inscripciones", etiqueta: "Inscripciones", icono: ClipboardList },
-  { seccion: "cursos", etiqueta: "Cursos", icono: BookOpen },
-  { seccion: "certificados", etiqueta: "Certificados", icono: Award },
-  { seccion: "reportes", etiqueta: "Reportes", icono: BarChart3 },
-];
 
 const RUTAS_PUBLICAS: Record<Exclude<SeccionPublica, "ficha">, string> = {
   inicio: "#/inicio",
@@ -298,141 +266,33 @@ export default function Page() {
 
   if (pantalla === "panel") {
     return (
-      <div className="flex min-h-screen bg-[#EEF1F4]">
-        {/* Menú lateral del panel (escritorio) */}
-        <aside className="hidden w-60 shrink-0 flex-col bg-[#1F3A54] lg:flex">
-          <div className="border-b border-white/10 px-5 py-4">
-            <span className="inline-block rounded bg-white px-2.5 py-1 text-sm font-bold tracking-wide text-[#1F3A54]">
-              PEDSAR
-            </span>
-            <p className="mt-2 text-xs text-white/70">
-              Panel de administración
-            </p>
-          </div>
-          <nav
-            className="flex-1 space-y-1 px-3 py-4"
-            aria-label="Secciones del panel"
-          >
-            {SECCIONES_PANEL.map((item) => (
-              <button
-                key={item.seccion}
-                type="button"
-                onClick={() => navegarPanel(item.seccion)}
-                aria-current={
-                  seccionPanel === item.seccion ? "page" : undefined
-                }
-                className={cn(
-                  "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
-                  seccionPanel === item.seccion
-                    ? "bg-white/15 font-medium text-white"
-                    : "text-white/80 hover:bg-white/10 hover:text-white"
-                )}
-              >
-                <item.icono className="h-4 w-4" aria-hidden="true" />
-                {item.etiqueta}
-              </button>
-            ))}
-          </nav>
-          <div className="space-y-1 border-t border-white/10 px-3 py-4">
-            <button
-              type="button"
-              onClick={() => navegarSitio("inicio")}
-              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              Ver sitio público
-            </button>
-            <button
-              type="button"
-              onClick={cerrarSesion}
-              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <LogOut className="h-4 w-4" aria-hidden="true" />
-              Cerrar sesión
-            </button>
-          </div>
-        </aside>
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Barra superior del panel */}
-          <header className="border-b border-[#D5DBE1] bg-white">
-            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
-              <p className="text-sm font-bold text-[#1F3A54]">
-                PEDSAR · Administración
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="hidden rounded-full border border-[#D5DBE1] bg-[#F8FAFB] px-3 py-1 text-xs text-[#44525F] sm:inline-flex">
-                  admin
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={cerrarSesion}
-                  className="border-[#C6D0D9] text-[#44525F] hover:bg-[#F1F3F5]"
-                >
-                  <LogOut className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                  Cerrar sesión
-                </Button>
-              </div>
-            </div>
-            {/* Navegación del panel (móvil) */}
-            <nav
-              className="flex gap-1 overflow-x-auto px-4 pb-3 lg:hidden"
-              aria-label="Secciones del panel"
-            >
-              {SECCIONES_PANEL.map((item) => (
-                <button
-                  key={item.seccion}
-                  type="button"
-                  onClick={() => navegarPanel(item.seccion)}
-                  aria-current={
-                    seccionPanel === item.seccion ? "page" : undefined
-                  }
-                  className={cn(
-                    "whitespace-nowrap rounded-md px-3 py-1.5 text-xs transition-colors",
-                    seccionPanel === item.seccion
-                      ? "bg-[#2E5F8A] font-medium text-white"
-                      : "bg-[#F1F3F5] text-[#44525F] hover:bg-[#E2E7EC]"
-                  )}
-                >
-                  {item.etiqueta}
-                </button>
-              ))}
-            </nav>
-          </header>
-
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
-            {seccionPanel === "panel" && (
-              <PanelView
-                cursos={cursos}
-                inscripciones={inscripciones}
-                onVerReportes={() => navegarPanel("reportes")}
-                onIrCertificados={() => navegarPanel("certificados")}
-              />
-            )}
-            {seccionPanel === "estudiantes" && (
-              <EstudiantesView inscripciones={inscripciones} />
-            )}
-            {seccionPanel === "inscripciones" && (
-              <InscripcionesView inscripciones={inscripciones} />
-            )}
-            {seccionPanel === "cursos" && (
-              <CursosAdmin cursos={cursos} onCrearCurso={crearCurso} />
-            )}
-            {seccionPanel === "certificados" && (
-              <CertificadosView
-                inscripciones={inscripciones}
-                certificados={certificados}
-                onEmitir={emitirCertificado}
-              />
-            )}
-            {seccionPanel === "reportes" && (
-              <ReportesView inscripciones={inscripciones} />
-            )}
-          </main>
-        </div>
-      </div>
+      <AdminLayout
+        seccion={seccionPanel}
+        pendientes={inscripciones.filter((item) => item.estado === "Pendiente").length}
+        onNavegar={navegarPanel}
+        onSitioPublico={() => navegarSitio("inicio")}
+        onCerrarSesion={cerrarSesion}
+      >
+        {seccionPanel === "panel" && (
+          <PanelView
+            cursos={cursos}
+            inscripciones={inscripciones}
+            certificadosEmitidos={certificados.length}
+            onVerReportes={() => navegarPanel("reportes")}
+            onIrCertificados={() => navegarPanel("certificados")}
+            onGestionarCursos={() => navegarPanel("cursos")}
+            onVerInscripciones={() => navegarPanel("inscripciones")}
+            onVerEstudiantes={() => navegarPanel("estudiantes")}
+          />
+        )}
+        {seccionPanel === "estudiantes" && <EstudiantesView inscripciones={inscripciones} />}
+        {seccionPanel === "inscripciones" && <InscripcionesView inscripciones={inscripciones} />}
+        {seccionPanel === "cursos" && <CursosAdmin cursos={cursos} onCrearCurso={crearCurso} />}
+        {seccionPanel === "certificados" && (
+          <CertificadosView inscripciones={inscripciones} certificados={certificados} onEmitir={emitirCertificado} />
+        )}
+        {seccionPanel === "reportes" && <ReportesView inscripciones={inscripciones} />}
+      </AdminLayout>
     );
   }
 
